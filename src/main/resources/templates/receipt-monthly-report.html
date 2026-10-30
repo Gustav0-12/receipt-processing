@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>Relatório Financeiro Mensal</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm 14mm 17mm 14mm;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+            color: #1e293b;
+            font-family: "Helvetica", "Arial", sans-serif;
+            font-size: 10px;
+        }
+
+        .page {
+            width: 100%;
+        }
+
+        /* HEADER */
+
+        .header {
+            background: #101d36;
+            color: #ffffff;
+            padding: 27px 29px;
+            border-radius: 10px;
+        }
+
+        .brand {
+            font-size: 9px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #91a8cc;
+            text-transform: uppercase;
+        }
+
+        .header-title {
+            font-size: 25px;
+            font-weight: bold;
+            margin-top: 22px;
+            margin-bottom: 7px;
+            color: #ffffff;
+        }
+
+        .header-description {
+            font-size: 10px;
+            color: #b8c6dc;
+            margin: 0;
+        }
+
+        .header-bottom {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #34445f;
+        }
+
+        .header-bottom table {
+            width: 100%;
+        }
+
+        .header-label {
+            color: #91a8cc;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header-period {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            padding-top: 5px;
+        }
+
+        .header-type {
+            text-align: right;
+            color: #a9bddb;
+            font-size: 9px;
+        }
+
+        /* SECTION */
+
+        .section {
+            margin-top: 27px;
+        }
+
+        .section-heading {
+            font-size: 13px;
+            font-weight: bold;
+            color: #172b4d;
+            margin-bottom: 4px;
+        }
+
+        .section-description {
+            color: #8793a5;
+            font-size: 9px;
+            margin-bottom: 13px;
+        }
+
+        /* SUMMARY */
+
+        .summary {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 7px;
+            margin-left: -7px;
+        }
+
+        .summary td {
+            width: 33.33%;
+        }
+
+        .metric {
+            background: #f6f8fb;
+            border: 1px solid #e7ebf1;
+            border-radius: 8px;
+            padding: 15px 13px;
+            height: 88px;
+            vertical-align: top;
+        }
+
+        .metric.primary {
+            background: #edf8f2;
+            border: 1px solid #d6eddf;
+        }
+
+        .metric-label {
+            color: #77849a;
+            font-size: 8px;
+            font-weight: bold;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            color: #172b4d;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .metric.primary .metric-value {
+            color: #16804a;
+        }
+
+        .metric-note {
+            color: #9aa5b5;
+            font-size: 8px;
+            margin-top: 5px;
+        }
+
+        /* HIGHLIGHT */
+
+        .highlight {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: separate;
+            border-spacing: 7px 0;
+            margin-left: -7px;
+        }
+
+        .highlight td {
+            width: 50%;
+            background: #ffffff;
+            border: 1px solid #e7ebf1;
+            border-radius: 8px;
+            padding: 13px;
+        }
+
+        .highlight-label {
+            color: #8490a2;
+            font-size: 8px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.6px;
+        }
+
+        .highlight-value {
+            color: #172b4d;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        /* TABLE */
+
+        .table-container {
+            border: 1px solid #e7ebf1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .purchases {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .purchases thead {
+            background: #f0f3f8;
+        }
+
+        .purchases th {
+            color: #66758c;
+            font-size: 8px;
+            font-weight: bold;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            padding: 12px 11px;
+            text-align: left;
+        }
+
+        .purchases td {
+            padding: 13px 11px;
+            border-bottom: 1px solid #edf0f4;
+            color: #45536a;
+            font-size: 9px;
+        }
+
+        .purchases tbody tr:nth-child(even) {
+            background: #fafbfd;
+        }
+
+        .purchase-date {
+            color: #7d899b;
+        }
+
+        .store-name {
+            color: #253752;
+            font-weight: bold;
+        }
+
+        .purchase-value {
+            color: #172b4d;
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .total-row td {
+            background: #edf8f2;
+            color: #16804a;
+            font-weight: bold;
+            border-top: 1px solid #d6eddf;
+            border-bottom: none;
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+
+        /* EMPTY STATE */
+
+        .empty {
+            background: #f7f9fc;
+            border: 1px dashed #d5dce6;
+            padding: 30px 15px;
+            text-align: center;
+            border-radius: 8px;
+            color: #78869b;
+            font-size: 10px;
+        }
+
+        .empty-title {
+            color: #34445e;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            margin-top: 28px;
+            padding-top: 13px;
+            border-top: 1px solid #e7ebf1;
+            color: #9aa5b5;
+            font-size: 8px;
+        }
+
+        .footer table {
+            width: 100%;
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="header">
+        <div class="brand">
+            PERSONAL FINANCE
+        </div>
+        <div class="header-title">
+            Relatório financeiro
+        </div>
+        <p class="header-description">
+            Acompanhe o resumo das suas compras e despesas mensais.
+        </p>
+        <div class="header-bottom">
+            <table>
+                <tr>
+                    <td>
+                        <div class="header-label">
+                            Período de referência
+                        </div>
+                        <div class="header-period"
+                             th:text="${periodLabel}">
+                            Outubro de 2026
+                        </div>
+                    </td>
+                    <td class="header-type">
+                        RELATÓRIO MENSAL<br/>
+                        CONTROLE DE GASTOS
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="section">
+        <div class="section-heading">
+            Visão geral
+        </div>
+        <div class="section-description">
+            Indicadores consolidados do período selecionado.
+        </div>
+        <table class="summary">
+            <tr>
+                <td>
+                    <div class="metric primary">
+                        <div class="metric-label">
+                            Total gasto
+                        </div>
+                        <div class="metric-value"
+                             th:text="${'R$ ' + #numbers.formatDecimal(report.totalSpent, 1, 'POINT', 2, 'COMMA')}">
+                            R$ 850,50
+                        </div>
+                        <div class="metric-note">
+                            Despesa acumulada no mês
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="metric">
+                        <div class="metric-label">
+                            Compras realizadas
+                        </div>
+                        <div class="metric-value"
+                             th:text="${report.receiptCount}">
+                            5
+                        </div>
+                        <div class="metric-note">
+                            Notas fiscais registradas
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="metric">
+                        <div class="metric-label">
+                            Média por compra
+                        </div>
+                        <div class="metric-value"
+                             th:text="${'R$ ' + #numbers.formatDecimal(report.averagePurchase, 1, 'POINT', 2, 'COMMA')}">
+                            R$ 170,10
+                        </div>
+                        <div class="metric-note">
+                            Valor médio das compras
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <table class="highlight">
+            <tr>
+                <td>
+                    <div class="highlight-label">
+                        Maior compra
+                    </div>
+                    <div class="highlight-value"
+                         th:text="${'R$ ' + #numbers.formatDecimal(report.highestPurchase, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 300,00
+                    </div>
+                </td>
+                <td>
+                    <div class="highlight-label">
+                        Menor compra
+                    </div>
+                    <div class="highlight-value"
+                         th:text="${'R$ ' + #numbers.formatDecimal(report.lowestPurchase, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 50,00
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="section">
+        <div class="section-heading">
+            Histórico de compras
+        </div>
+        <div class="section-description">
+            Relação das notas fiscais registradas durante o período.
+        </div>
+        <div class="table-container"
+             th:if="${not #lists.isEmpty(receipts)}">
+            <table class="purchases">
+                <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Estabelecimento</th>
+                    <th class="text-right">Valor da compra</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="receipt : ${receipts}">
+                    <td class="purchase-date"
+                        th:text="${#temporals.format(receipt.issueDate, 'dd/MM/yyyy')}">
+                        03/10/2026
+                    </td>
+                    <td class="store-name"
+                        th:text="${receipt.storeName}">
+                        Mercado A
+                    </td>
+                    <td class="text-right purchase-value"
+                        th:text="${'R$ ' + #numbers.formatDecimal(receipt.total, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 300,00
+                    </td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="2">
+                        TOTAL DO PERÍODO
+                    </td>
+                    <td class="text-right"
+                        th:text="${'R$ ' + #numbers.formatDecimal(report.totalSpent, 1, 'POINT', 2, 'COMMA')}">
+                        R$ 850,50
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty"
+             th:if="${#lists.isEmpty(receipts)}">
+
+            <div class="empty-title">
+                Nenhuma compra encontrada
+            </div>
+
+            Não existem compras registradas neste período.
+        </div>
+    </div>
+    <div class="footer">
+        <table>
+            <tr>
+                <td>
+                    Relatório gerado automaticamente pelo sistema.
+                </td>
+                <td class="footer-right">
+                    CONTROLE FINANCEIRO
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
